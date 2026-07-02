@@ -16,9 +16,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                    <span>Kostenvergleich</span>
-                </h1>
+                
                 <div class="collapse navbar-collapse" id="navbar-menu">
                     <ul class="navbar-nav pt-lg-3">
                         <li class="nav-item">
@@ -60,8 +58,35 @@
                                 <span class="nav-link-title">Verwaltung</span>
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="<?= base_url('verwaltung/trucker') ?>">Trucker</a>
-                                <a class="dropdown-item" href="<?= base_url('verwaltung/preistabellen') ?>">Preistabellen</a>
+                                <a class="dropdown-item" href="<?= base_url('verwaltung/trucker') ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+                                    </svg>
+                                    Trucker
+                                </a>
+                                <a class="dropdown-item" href="<?= base_url('verwaltung/preistabellen') ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <rect x="4" y="3" width="16" height="18" rx="2"/>
+                                        <line x1="8" y1="7" x2="16" y2="7"/>
+                                        <line x1="8" y1="11" x2="16" y2="11"/>
+                                        <line x1="8" y1="15" x2="12" y2="15"/>
+                                    </svg>
+                                    Preistabellen
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="<?= base_url('verwaltung/gewichtsklassen') ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <line x1="3" y1="12" x2="21" y2="12"/>
+                                        <line x1="3" y1="6" x2="21" y2="6"/>
+                                        <line x1="3" y1="18" x2="21" y2="18"/>
+                                    </svg>
+                                    Gewichtsklassen
+                                </a>
+                                </a>
                             </div>
                         </li>
                     </ul>
@@ -90,5 +115,13 @@
 
     </div>
     <script src="<?= base_url('assets/js/tabler.min.js') ?>"></script>
+    <style>
+@media print {
+    .navbar, .page-header, #berechnen-btn, #position-hinzufuegen,
+    .btn-outline-secondary, .col-md-7 { display: none !important; }
+    .col-md-5 { width: 100% !important; max-width: 100% !important; flex: 0 0 100% !important; }
+    #ergebnis-card { display: block !important; box-shadow: none !important; border: 1px solid #ccc; }
+}
+</style>
 </body>
 </html>

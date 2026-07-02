@@ -95,4 +95,15 @@ class Gewichtsklassen extends BaseController
         session()->setFlashdata('success', 'Gewichtsklasse wurde erfolgreich gelöscht.');
         return redirect()->to(base_url('verwaltung/gewichtsklassen/' . $eintrag['trucker_id']));
     }
+
+    public function uebersicht(): string
+    {
+        $db      = \Config\Database::connect();
+        $trucker = $db->table('trucker')->where('aktiv', 1)->orderBy('name')->get()->getResultArray();
+
+        return view('verwaltung/gewichtsklassen/uebersicht', [
+            'title'   => 'Gewichtsklassen',
+            'trucker' => $trucker,
+        ]);
+    }
 }

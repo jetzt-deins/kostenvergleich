@@ -38,6 +38,7 @@ $routes->post('verwaltung/preistabellen/aktualisieren/(:num)/(:alpha)/0', 'Verwa
 // Kalkulation
 $routes->get('kalkulation', 'Kalkulation::index');
 $routes->post('kalkulation/berechnen', 'Kalkulation::berechnen');
+$routes->post('kalkulation/vergleichen', 'Kalkulation::vergleichen');
 
 // Gewichtsklassen
 $routes->get('verwaltung/gewichtsklassen/(:num)', 'Verwaltung\Gewichtsklassen::index/$1');
@@ -46,3 +47,6 @@ $routes->post('verwaltung/gewichtsklassen/speichern', 'Verwaltung\Gewichtsklasse
 $routes->get('verwaltung/gewichtsklassen/bearbeiten/(:num)', 'Verwaltung\Gewichtsklassen::bearbeiten/$1');
 $routes->post('verwaltung/gewichtsklassen/aktualisieren/(:num)', 'Verwaltung\Gewichtsklassen::aktualisieren/$1');
 $routes->get('verwaltung/gewichtsklassen/loeschen/(:num)', 'Verwaltung\Gewichtsklassen::loeschen/$1');
+
+// Gewichtsklassen Übersicht
+$routes->get('verwaltung/gewichtsklassen', 'Verwaltung\Gewichtsklassen::uebersicht');
