@@ -144,25 +144,25 @@ class Kalkulation extends BaseController
             }
         }
 
-            // Gewicht aus CBM und LDM ermitteln
-            $gew_cbm = $gesamt_cbm * $cbm_faktor;
-            $gew_ldm = $gesamt_ldm * $ldm_faktor;
+        // Gewicht aus CBM und LDM ermitteln
+        $gew_cbm = $gesamt_cbm * $cbm_faktor;
+        $gew_ldm = $gesamt_ldm * $ldm_faktor;
 
-            // Ab x Europaletten LDM-Satz verwenden
-            if ($anzahl_euro >= $ldm_ab_ep) {
-                $abrechnungsgewicht = max($gesamt_kg, $gew_ldm);
-            } else {
-                $abrechnungsgewicht = max($gesamt_kg, $gew_cbm);
-            }
+        // Ab x Europaletten LDM-Satz verwenden
+        if ($anzahl_euro >= $ldm_ab_ep) {
+            $abrechnungsgewicht = max($gesamt_kg, $gew_ldm);
+        } else {
+            $abrechnungsgewicht = max($gesamt_kg, $gew_cbm);
+        }
 
-            // Mindestgewicht je Verpackungsart prüfen
-            foreach ($positionen as $pos) {
-                if (empty($pos['verpackungsart'])) continue;
-                $va = $pos['verpackungsart'];
-                if (isset($vpa[$va]) && $vpa[$va]['min_gewicht'] > 0) {
-                    $abrechnungsgewicht = max($abrechnungsgewicht, $vpa[$va]['min_gewicht']);
-                }
+        // Mindestgewicht je Verpackungsart prüfen
+        foreach ($positionen as $pos) {
+            if (empty($pos['verpackungsart'])) continue;
+            $va = $pos['verpackungsart'];
+            if (isset($vpa[$va]) && $vpa[$va]['min_gewicht'] > 0) {
+                $abrechnungsgewicht = max($abrechnungsgewicht, $vpa[$va]['min_gewicht']);
             }
+        }
 
         // Gewichtsklasse ermitteln
         $gewichtsklasse = $db->table('trucker_gewichtsklassen')
@@ -196,13 +196,13 @@ class Kalkulation extends BaseController
             }
         }
 
-// Lademittelgebühren berechnen
-        $lademittel_gesamt = 0;
-        foreach ($positionen as $pos) {
-            if (!empty($pos['lademittel']) && (float)$pos['lademittel'] > 0) {
-                $lademittel_gesamt += (float)$pos['lademittel'] * (float)$pos['anzahl'];
-            }
-        }
+        // Lademittelgebühren berechnen
+                $lademittel_gesamt = 0;
+                foreach ($positionen as $pos) {
+                    if (!empty($pos['lademittel']) && (float)$pos['lademittel'] > 0) {
+                        $lademittel_gesamt += (float)$pos['lademittel'] * (float)$pos['anzahl'];
+                    }
+                }
 
         // Zusatzprodukt-Aufschlag
         $aufschlag = 0;
