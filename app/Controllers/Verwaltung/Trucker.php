@@ -138,6 +138,8 @@ class Trucker extends BaseController
             'max_gewicht_kolli' => $this->request->getPost('max_gewicht_kolli') ?: null,
             'sortierung'        => $this->request->getPost('sortierung') ?: 0,
             'aktiv'             => $this->request->getPost('aktiv') ? 1 : 0,
+            'lademittelgebuehr'          => $this->request->getPost('lademittelgebuehr') ?: null,
+            'lademittelgebuehr_standard' => $this->request->getPost('lademittelgebuehr_standard') ? 1 : 0,
             'created_at'        => date('Y-m-d H:i:s'),
             'updated_at'        => date('Y-m-d H:i:s'),
         ]);
@@ -172,6 +174,8 @@ class Trucker extends BaseController
             'max_gewicht_kolli' => $this->request->getPost('max_gewicht_kolli') ?: null,
             'sortierung'        => $this->request->getPost('sortierung') ?: 0,
             'aktiv'             => $this->request->getPost('aktiv') ? 1 : 0,
+            'lademittelgebuehr'          => $this->request->getPost('lademittelgebuehr') ?: null,
+            'lademittelgebuehr_standard' => $this->request->getPost('lademittelgebuehr_standard') ? 1 : 0,
             'updated_at'        => date('Y-m-d H:i:s'),
         ]);
 

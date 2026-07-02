@@ -47,6 +47,23 @@
                             <label class="form-label">Max. Gewicht/Kolli (kg)</label>
                             <input type="number" step="0.01" name="max_gewicht_kolli" class="form-control" value="<?= esc($eintrag['max_gewicht_kolli'] ?? '') ?>">
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Lademittelgebühr (€ pro Stück)</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" name="lademittelgebuehr" class="form-control" value="<?= esc($eintrag['lademittelgebuehr'] ?? '') ?>" placeholder="0.00">
+                                <span class="input-group-text">€</span>
+                            </div>
+                            <small class="text-muted">Leer lassen = keine Gebühr</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Standard aktiviert</label>
+                            <div class="mt-2">
+                                <label class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="lademittelgebuehr_standard" value="1" <?= (!isset($eintrag) || $eintrag['lademittelgebuehr_standard']) ? 'checked' : '' ?>>
+                                    <span class="form-check-label">Checkbox standardmäßig aktiviert</span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Aktiv</label>
                             <div class="mt-2">

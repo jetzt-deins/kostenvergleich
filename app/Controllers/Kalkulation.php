@@ -123,7 +123,7 @@ class Kalkulation extends BaseController
             if (empty($pos['anzahl']) || empty($pos['verpackungsart'])) continue;
 
             $anzahl         = (float)$pos['anzahl'];
-            $kg             = (float)$pos['gewicht'];
+            $kg             = (float)$pos['gewicht'] * $anzahl;
             $laenge         = (float)$pos['laenge'];
             $breite         = (float)$pos['breite'];
             $hoehe          = (float)$pos['hoehe'];
@@ -196,6 +196,14 @@ class Kalkulation extends BaseController
             }
         }
 
+// Lademittelgebühren berechnen
+        $lademittel_gesamt = 0;
+        foreach ($positionen as $pos) {
+            if (!empty($pos['lademittel']) && (float)$pos['lademittel'] > 0) {
+                $lademittel_gesamt += (float)$pos['lademittel'] * (float)$pos['anzahl'];
+            }
+        }
+
         // Zusatzprodukt-Aufschlag
         $aufschlag = 0;
         if ($zusatzprodukt && $zusatzprodukt['aufschlag'] > 0) {
@@ -212,7 +220,7 @@ class Kalkulation extends BaseController
             $diesel_betrag = $frachtpreis * ($dieselzuschlag / 100);
         }
 
-        $gesamtpreis = $frachtpreis + $aufschlag + $diesel_betrag;
+        $gesamtpreis = $frachtpreis + $aufschlag + $diesel_betrag + $lademittel_gesamt;
 
         return $this->response->setJSON([
             'success'            => true,
@@ -231,7 +239,18 @@ class Kalkulation extends BaseController
             'trucker'            => $trucker['name'],
             'richtung'           => $richtung,
             'plz'                => $plz,
+            'lademittel_gesamt'  => round($lademittel_gesamt, 2),
         ]);
+
+        // Lademittelgebühren berechnen
+        $lademittel_gesamt = 0;
+        foreach ($positionen as $pos) {
+            if (!empty($pos['lademittel']) && (float)$pos['lademittel'] > 0) {
+                $lademittel_gesamt += (float)$pos['lademittel'] * (float)$pos['anzahl'];
+            }
+        }
+
+        $gesamtpreis = $frachtpreis + $aufschlag + $diesel_betrag + $lademittel_gesamt;
     }
 
     public function vergleichen()
@@ -269,7 +288,7 @@ class Kalkulation extends BaseController
                 if (empty($pos['anzahl']) || empty($pos['verpackungsart'])) continue;
 
                 $anzahl         = (float)$pos['anzahl'];
-                $kg             = (float)$pos['gewicht'];
+                $kg             = (float)$pos['gewicht'] * $anzahl;
                 $laenge         = (float)$pos['laenge'];
                 $breite         = (float)$pos['breite'];
                 $hoehe          = (float)$pos['hoehe'];
@@ -331,18 +350,27 @@ class Kalkulation extends BaseController
                 }
             }
 
+           // Lademittelgebühren und Dieselzuschlag berechnen
+            $lademittel_gesamt = 0;
+            foreach ($positionen as $pos) {
+                if (!empty($pos['lademittel']) && (float)$pos['lademittel'] > 0) {
+                    $lademittel_gesamt += (float)$pos['lademittel'] * (float)$pos['anzahl'];
+                }
+            }
+
             $diesel_betrag = 0;
             if ($dieselzuschlag > 0) {
                 $diesel_betrag = $frachtpreis * ($dieselzuschlag / 100);
             }
 
-            $gesamtpreis = $frachtpreis + $diesel_betrag;
+            $gesamtpreis = $frachtpreis + $diesel_betrag + $lademittel_gesamt;
 
             $ergebnisse[] = [
                 'trucker'            => $trucker['name'],
                 'abrechnungsgewicht' => round($abrechnungsgewicht, 2),
                 'gewichtsklasse'     => $gewichtsklasse ? $gewichtsklasse['gewicht_bis'] : null,
                 'frachtpreis'        => round($frachtpreis, 2),
+                'lademittel'         => round($lademittel_gesamt, 2),
                 'diesel_betrag'      => round($diesel_betrag, 2),
                 'gesamtpreis'        => round($gesamtpreis, 2),
                 'hat_preise'         => $frachtpreis > 0,

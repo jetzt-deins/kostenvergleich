@@ -74,6 +74,7 @@
                                         <th>Länge (cm)</th>
                                         <th>Breite (cm)</th>
                                         <th>Höhe (cm)</th>
+                                        <th>Lademittel</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -153,6 +154,10 @@
                             <div class="col-6 text-end" id="res-aufschlag"></div>
                         </div>
                         <div class="row mb-2">
+                            <div class="col-6 text-muted">Lademittelgebühren</div>
+                            <div class="col-6 text-end" id="res-lademittel"></div>
+                        </div>
+                        <div class="row mb-2">
                             <div class="col-6 text-muted">Dieselzuschlag (<span id="res-diesel-pct"></span>%)</div>
                             <div class="col-6 text-end" id="res-diesel-betrag"></div>
                         </div>
@@ -199,6 +204,7 @@
                                     <th>Trucker</th>
                                     <th class="text-end">Abr.-Gewicht</th>
                                     <th class="text-end">Frachtpreis</th>
+                                    <th class="text-end">Lademittel</th>
                                     <th class="text-end">Diesel</th>
                                     <th class="text-end">Gesamt</th>
                                 </tr>
@@ -257,21 +263,49 @@ function positionHinzufuegen() {
     const truckerId = parseInt(document.getElementById('trucker_id').value);
     const arten = verpackungsartenDaten[truckerId] || [];
 
-    let optionen = arten.map(a => `<option value="${a.bezeichnung}">${a.bezeichnung}</option>`).join('');
+    let optionen = arten.map(a => `<option value="${a.bezeichnung}" data-gebuehr="${a.lademittelgebuehr ?? ''}" data-standard="${a.lademittelgebuehr_standard}">${a.bezeichnung}</option>`).join('');
 
     const row = document.createElement('tr');
     row.innerHTML = `
         <td class="text-center">${posNr}</td>
         <td><input type="number" class="form-control form-control-sm" name="anzahl" value="1" min="1" style="width:60px;"></td>
-        <td><select class="form-select form-select-sm verpackungsart-select" name="verpackungsart">${optionen}</select></td>
+        <td><select class="form-select form-select-sm verpackungsart-select" name="verpackungsart" onchange="updateLademittel(this)">${optionen}</select></td>
         <td><input type="number" class="form-control form-control-sm" name="gewicht" value="" placeholder="kg" style="width:80px;"></td>
         <td><input type="number" class="form-control form-control-sm" name="laenge" value="" placeholder="cm" style="width:75px;"></td>
         <td><input type="number" class="form-control form-control-sm" name="breite" value="" placeholder="cm" style="width:75px;"></td>
         <td><input type="number" class="form-control form-control-sm" name="hoehe" value="" placeholder="cm" style="width:75px;"></td>
+        <td>
+            <div class="lademittel-check" style="min-width:140px;"></div>
+        </td>
         <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove()">×</button></td>
     `;
     document.getElementById('positionen-body').appendChild(row);
+
+    // Lademittel-Checkbox initialisieren
+    const select = row.querySelector('.verpackungsart-select');
+    updateLademittel(select);
 }
+
+function updateLademittel(select) {
+    const row = select.closest('tr');
+    const option = select.options[select.selectedIndex];
+    const gebuehr = option.getAttribute('data-gebuehr');
+    const standard = option.getAttribute('data-standard');
+    const container = row.querySelector('.lademittel-check');
+
+    if (gebuehr !== '' && gebuehr !== null && parseFloat(gebuehr) >= 0) {
+        const checked = standard === '1' ? 'checked' : '';
+        container.innerHTML = `
+            <label class="form-check mb-0">
+                <input class="form-check-input lademittel-checkbox" type="checkbox" name="lademittel" value="${gebuehr}" ${checked}>
+                <span class="form-check-label small">Lademittel<br><strong>${parseFloat(gebuehr).toFixed(2).replace('.', ',')} €/Stk</strong></span>
+            </label>
+        `;
+    } else {
+        container.innerHTML = '';
+    }
+}
+
 
 // Berechnung
 document.getElementById('berechnen-btn').addEventListener('click', function() {
@@ -287,8 +321,9 @@ document.getElementById('berechnen-btn').addEventListener('click', function() {
     }
 
     // Positionen sammeln
-    const positionen = [];
+ const positionen = [];
     document.querySelectorAll('#positionen-body tr').forEach(row => {
+        const checkbox = row.querySelector('.lademittel-checkbox');
         positionen.push({
             anzahl:         row.querySelector('[name=anzahl]').value,
             verpackungsart: row.querySelector('[name=verpackungsart]').value,
@@ -296,6 +331,7 @@ document.getElementById('berechnen-btn').addEventListener('click', function() {
             laenge:         row.querySelector('[name=laenge]').value || 0,
             breite:         row.querySelector('[name=breite]').value || 0,
             hoehe:          row.querySelector('[name=hoehe]').value || 0,
+            lademittel:     (checkbox && checkbox.checked) ? checkbox.value : 0,
         });
     });
 
@@ -337,6 +373,7 @@ document.getElementById('berechnen-btn').addEventListener('click', function() {
             document.getElementById('res-abrechnungsgewicht').textContent = formatKg(data.abrechnungsgewicht);
             document.getElementById('res-frachtpreis').textContent = formatEur(data.frachtpreis);
             document.getElementById('res-aufschlag').textContent = formatEur(data.aufschlag);
+            document.getElementById('res-lademittel').textContent = formatEur(data.lademittel_gesamt);
             document.getElementById('res-diesel-pct').textContent = data.dieselzuschlag;
             document.getElementById('res-diesel-betrag').textContent = formatEur(data.diesel_betrag);
             document.getElementById('res-gesamtpreis').textContent = formatEur(data.gesamtpreis);
@@ -371,8 +408,9 @@ document.getElementById('vergleichen-btn').addEventListener('click', function() 
         return;
     }
 
-    const positionen = [];
+ const positionen = [];
     document.querySelectorAll('#positionen-body tr').forEach(row => {
+        const checkbox = row.querySelector('.lademittel-checkbox');
         positionen.push({
             anzahl:         row.querySelector('[name=anzahl]').value,
             verpackungsart: row.querySelector('[name=verpackungsart]').value,
@@ -380,6 +418,7 @@ document.getElementById('vergleichen-btn').addEventListener('click', function() 
             laenge:         row.querySelector('[name=laenge]').value || 0,
             breite:         row.querySelector('[name=breite]').value || 0,
             hoehe:          row.querySelector('[name=hoehe]').value || 0,
+            lademittel:     (checkbox && checkbox.checked) ? checkbox.value : 0,
         });
     });
 
@@ -422,6 +461,7 @@ document.getElementById('vergleichen-btn').addEventListener('click', function() 
                     </td>
                     <td class="text-end">${formatKg(e.abrechnungsgewicht)}</td>
                     <td class="text-end">${formatEur(e.frachtpreis)}</td>
+                    <td class="text-end">${formatEur(e.lademittel)}</td>
                     <td class="text-end">${formatEur(e.diesel_betrag)}</td>
                     <td class="text-end fw-bold">${formatEur(e.gesamtpreis)}</td>
                 `;
